@@ -1,0 +1,37 @@
+BasedOnStyle: Google
+IndentWidth: 4
+TabWidth: 4
+# UseTab: Always
+ColumnLimit: 120
+AccessModifierOffset: -4
+# # Relevant portion:
+# AllowShortFunctionsOnASingleLine: None
+# BinPackArguments: false
+# BinPackParameters: false
+# AlignAfterOpenBracket: AlwaysBreak
+# AllowAllArgumentsOnNextLine: false
+
+# ColumnLimit: 0
+
+# BreakBeforeBraces: Custom
+# BraceWrapping:
+#     AfterClass: false
+
+# BraceWrapping:
+#   AfterClass: false
+#   AfterControlStatement: false
+#   AfterEnum: false
+#   AfterFunction: false
+#   AfterNamespace: false
+#   AfterObjCDeclaration: false
+#   AfterObjCImplementation: false
+#   AfterStruct: false
+#   AfterTemplateDeclaration: false
+#   AfterUnion: false
+#   BeforeCatch: false
+#   BeforeElse: false
+#   IndentBraces: false
+#   SplitEmptyFunction: false
+#   SplitEmptyRecord: false
+#   SplitEmptyNamespace: false
+#   Functions: Preserve

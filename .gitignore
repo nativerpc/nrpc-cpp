@@ -1,0 +1,4 @@
+staging_modules/
+build/
+.backup/
+boost_install/
