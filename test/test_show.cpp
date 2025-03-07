@@ -39,7 +39,7 @@ class ServerApplication {
 public:
     ServerApplication() {
         cmd_ = nrpc_cpp::CommandLine({
-            {"port", 9000},
+            {"port", 9003},
             {"format", "json"},
             {"rate", 1.0},
             {"verbose", true},
@@ -54,7 +54,7 @@ public:
             {"type", nrpc_cpp::SocketType::BIND},
             {"protocol", nrpc_cpp::ProtocolType::TCP},
             {"format", (std::string)cmd_["format"] == "json" ? nrpc_cpp::FormatType::JSON : nrpc_cpp::FormatType::BINARY},
-            {"caller", "test_server_cpp"},
+            {"caller", "test_show_cpp"},
             {
                 "types",
                 {
