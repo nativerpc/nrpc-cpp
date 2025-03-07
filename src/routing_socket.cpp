@@ -830,11 +830,16 @@ void RoutingSocket::wait() {
 void RoutingSocket::close() {
     is_alive_ = false;
     if (socket_type_ == SocketType::BIND) {
+        server_socket_->set_closing();
+    } else {
+        client_socket_->set_closing();
+    }
+    processor_->join();
+    if (socket_type_ == SocketType::BIND) {
         server_socket_->close();
     } else {
         client_socket_->close();
     }
-    processor_->join();
     client_socket_.reset();
     processor_.reset();
 }

@@ -1,6 +1,6 @@
 # Native RPC Communication Library
 
-Cross-platform and cross-language communication library in C++. Part of larger [Native RPC](https://github.com/nativerpc) framework. See [README.md](https://github.com/nativerpc/nrpc-examples) in nrpc-examples project for more information.
+Cross-platform and cross-language communication library in C++. Part of larger [Native RPC](https://github.com/nativerpc) framework. See [nrpc-examples/README.md](https://github.com/nativerpc/nrpc-examples) for more information.
 
 # Prerequisites
 
@@ -38,10 +38,7 @@ Manual and automated tests.
 
 ```
 build\bin\test_json.exe
-build\bin\test_show.exe port=9001
-build\bin\test_show_client.exe port=9001
 build\bin\test_zmq.exe
-show
-show -wrap
+build\bin\test_show.exe port=9001
 ```
 

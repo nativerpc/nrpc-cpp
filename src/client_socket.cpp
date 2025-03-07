@@ -18,6 +18,7 @@
  *          get_client_id
  *          get_metadata
  *          get_server_metadata
+ *          set_closing
  *          wait
  *          close
  *
@@ -410,8 +411,8 @@ void ClientSocket::_track_client() {
         } else if (event_id == ZMQ_EVENT_HANDSHAKE_SUCCEEDED) {
             is_connected_ = true;
         } else if (event_id == ZMQ_EVENT_DISCONNECTED) {
-            last_error_ = boost::str(boost::format("Connection lost %1%") % event_value);
             is_lost_ = true;
+            client_errors_ += boost::str(boost::format("\nConnection lost %1%") % event_value);
         }
 
         resp.resize(0);
@@ -544,6 +545,10 @@ int ClientSocket::get_client_id() { return client_id_; }
 nlohmann::json ClientSocket::get_metadata() { return metadata_; }
 
 nlohmann::json ClientSocket::get_server_metadata() { return server_metadata_; }
+
+void ClientSocket::set_closing() {
+    is_alive_ = false;
+}
 
 void ClientSocket::wait() {
     zmq_pollitem_t pollitems[1] = {0};

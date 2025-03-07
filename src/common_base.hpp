@@ -343,10 +343,11 @@ struct ServiceInfo {
 };
 
 struct ServerInfo {
-    std::string service_name;
     std::string server_name;
+    std::string service_name;
     ServerBase *instance{0};
     std::map<std::string, MethodInfo> methods;
+    std::string server_errors;
 };
 
 extern std::map<std::string, ClassInfo> g_all_types;
@@ -555,8 +556,8 @@ int register_member_server_method(int type, std::string class_name, std::string 
     assert(type == 3);
     if (g_all_servers.find(class_name) == g_all_servers.end()) {
         ServerInfo info1;
-        info1.service_name = class_name;
         info1.server_name = server_name;
+        info1.service_name = class_name;
         info1.instance = reinterpret_cast<ServerBase *>(server_instance);
         g_all_servers[class_name] = info1;
     }

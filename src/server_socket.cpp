@@ -20,6 +20,7 @@
  *          add_metadata
  *          get_request_lock
  *          get_metadata
+ *          set_closing
  *          update
  *          wait
  *          close
@@ -580,6 +581,10 @@ void ServerSocket::add_metadata(nlohmann::json data) { assert(false); }
 std::recursive_mutex& ServerSocket::get_request_lock() { return request_lock_; }
 
 nlohmann::json ServerSocket::get_metadata() { return metadata_; }
+
+void ServerSocket::set_closing() {
+    is_alive_ = false;
+}
 
 void ServerSocket::update() {
     assert(this);

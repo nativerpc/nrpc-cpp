@@ -18,6 +18,7 @@
  *          get_client_id
  *          get_metadata
  *          get_server_metadata
+ *          set_closing
  *          wait
  *          close
  * 
@@ -46,6 +47,7 @@ public:
     int get_client_id();
     nlohmann::json get_metadata();
     nlohmann::json get_server_metadata();
+    void set_closing();
     void wait();
     void close();
 
@@ -63,7 +65,7 @@ private:
     bool is_connected_{false};
     bool is_validated_{false};
     bool is_lost_{false};
-    std::string last_error_;
+    std::string client_errors_;
     nlohmann::json metadata_;
     nlohmann::json server_metadata_;
     void* zmq_context_{0};

@@ -20,6 +20,7 @@
  *          add_metadata
  *          get_request_lock
  *          get_metadata
+ *          set_closing
  *          update
  *          wait
  *          close
@@ -51,6 +52,7 @@ public:
     void add_metadata(nlohmann::json data);
     std::recursive_mutex& get_request_lock();
     nlohmann::json get_metadata();
+    void set_closing();
     void update();
     void wait();
     void close();
