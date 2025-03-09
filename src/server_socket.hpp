@@ -33,7 +33,7 @@ namespace nrpc_cpp {
 
 class ServerSocket {
 public:
-    ServerSocket(std::string ip_address, int port, int port_rev, std::string entry_file);
+    ServerSocket(std::string ip_address, int port, int port_rev, std::string socket_name);
     void bind();
     bool get_client_change(int timeout_ms, std::vector<int>& expected_clients);
 
@@ -62,7 +62,7 @@ private:
     std::string ip_address_;
     int port_{0};
     int port_rev_{0};
-    std::string entry_file_;
+    std::string socket_name_;
     int next_index_{0};
     std::vector<uint8_t> server_signature_;
     std::vector<uint8_t> server_signature_rev_;

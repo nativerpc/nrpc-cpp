@@ -122,7 +122,7 @@ public:
     SocketType type{SocketType::BIND};
     ProtocolType protocol{ProtocolType::TCP};
     FormatType format{FormatType::JSON};
-    std::string caller;
+    std::string name;
     nlohmann::json types;
     int port{0};
 };
@@ -156,7 +156,7 @@ public:
     int main_port{0};
     int main_port_rev{0};
     std::string host;
-    std::string entry_file;
+    std::string socket_name;
     std::string start_time;
     std::string client_signature;
     std::string client_signature_rev;
@@ -181,7 +181,7 @@ public:
         int client_id{0};
         bool is_validated{false};
         bool is_lost{false};
-        std::string entry_file;
+        std::string socket_name;
     };
 
     int server_id{0};
@@ -199,7 +199,7 @@ public:
     int client_count{0};
     std::vector<AppClientInfo> clients;
     std::vector<int> client_ids;
-    std::string entry_file;
+    std::string socket_name;
     std::string ip_address;
     int port{0};
     std::string format;
@@ -254,14 +254,14 @@ public:
         int client_id{0};
         bool is_validated{false};
         bool is_lost{false};
-        std::string entry_file;
+        std::string socket_name;
         SocketMetadataInfo client_metadata;
     };
 
     class SchemaServerInfo {
     public:
         int port{0};
-        std::string entry_file;
+        std::string socket_name;
         SocketMetadataInfo server_metadata;
     };
 
@@ -276,7 +276,7 @@ public:
     std::string this_socket;
     std::vector<SchemaClientInfo> clients;
     std::vector<SchemaServerInfo> servers;
-    std::string entry_file;
+    std::string socket_name;
 };
 
 enum FieldType {

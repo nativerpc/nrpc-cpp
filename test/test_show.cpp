@@ -54,7 +54,7 @@ public:
             {"type", nrpc_cpp::SocketType::BIND},
             {"protocol", nrpc_cpp::ProtocolType::TCP},
             {"format", (std::string)cmd_["format"] == "json" ? nrpc_cpp::FormatType::JSON : nrpc_cpp::FormatType::BINARY},
-            {"caller", "test_show_cpp"},
+            {"name", "test_show_cpp"},
             {
                 "types",
                 {
@@ -88,7 +88,7 @@ public:
         //         auto res = sock_->client_call(client_id, nrpc_cpp::get_string(nrpc_cpp::RoutingMessage::GetAppInfo),
         //                                     nlohmann::json({}));
         //         if ((bool)cmd_["verbose"]) {
-        //             std::cout << "Called client: GetAppInfo, " << client_id << ", " << ((std::string)res["entry_file"])
+        //             std::cout << "Called client: GetAppInfo, " << client_id << ", " << ((std::string)res["socket_name"])
         //                     << ", " << ((std::string)res["this_socket"]) << std::endl;
         //         }
         //     }

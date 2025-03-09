@@ -19,7 +19,8 @@ public:
             {"value", 1},
         });
 
-        nlohmann::json test = {{"name", "tester1"}};
+        nlohmann::json empty = nlohmann::json::array();
+        nlohmann::json test = {{"name", "tester1"}, {"empty", empty}};
         std::cout << "SIMPLE " << test.dump() << std::endl;
         std::cout << "TEST value=" << cmd["value"] << std::endl;
         TestClass x;

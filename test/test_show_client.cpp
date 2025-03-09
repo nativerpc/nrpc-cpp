@@ -68,7 +68,7 @@ public:
             {"type", nrpc_cpp::SocketType::CONNECT},
             {"protocol", nrpc_cpp::ProtocolType::TCP},
             {"format", (std::string)cmd_["format"] == "json" ? nrpc_cpp::FormatType::JSON : nrpc_cpp::FormatType::BINARY},
-            {"caller", "test_show_client_cpp"},
+            {"name", "test_show_client_cpp"},
             {
                 "types",
                 {

@@ -233,6 +233,7 @@ project(nrpc_cpp VERSION 1.0.1)
         "  endforeach()\n"
         "endmacro()\n"
         "include(\"\${CMAKE_CURRENT_LIST_DIR}/nrpc_cppTargets.cmake\")\n"
+        "set(nrpc_cpp_INCLUDE_DIR \"\${nrpc_cpp_DIR}/include\")\n"
     )
 
     # configure_package_config_file(

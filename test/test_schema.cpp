@@ -33,7 +33,7 @@ public:
                     nrpc_cpp::service<TestService>("TestApplication", this),
                 }
             },
-            {"caller", "test_schema_cpp"}
+            {"name", "test_schema_cpp"}
         }));
 
         std::cout << "Schema:" << std::endl;

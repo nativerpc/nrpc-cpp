@@ -23,6 +23,7 @@
  *          _find_new_fields
  *          _find_new_methods
  *          _find_missing_methods
+ *          get_client_id
  *          get_client_ids
  *          get_socket_type
  *          get_types
@@ -41,10 +42,10 @@ namespace nrpc_cpp {
 RoutingSocket::RoutingSocket(nlohmann::json options_) {
     RoutingSocketOptions_ options;
     options.type = (SocketType)(int)options_["type"];
-    options.protocol = (ProtocolType)(int)options_["protocol"];
-    options.format = (FormatType)(int)options_["format"];
-    options.caller = (std::string)options_["caller"];
-    options.types = options_["types"];
+    options.protocol = options_.contains("protocol") ? (ProtocolType)(int)options_["protocol"] : ProtocolType::TCP;
+    options.format = options_.contains("format") ? (FormatType)(int)options_["format"] : FormatType::JSON;
+    options.name = options_.contains("name") ? (std::string)options_["name"] : "";
+    options.types = options_.contains("types") ? options_["types"] : nlohmann::json::array();
     options.port = options_.contains("port") ? (int)options_["port"] : 0;
 
     socket_type_ = options.type;
@@ -52,7 +53,7 @@ RoutingSocket::RoutingSocket(nlohmann::json options_) {
     format_type_ = options.format;
     ip_address_ = "";
     port_ = options.port;
-    entry_file_ = options.caller;
+    socket_name_ = options.name;
     processor_.reset();
     is_ready_ = false;
     is_alive_ = true;
@@ -83,7 +84,7 @@ void RoutingSocket::bind(std::string ip_address, int port) {
 
     ip_address_ = ip_address;
     port_ = port;
-    server_socket_ = std::make_shared<ServerSocket>(ip_address, port, port + 10000, entry_file_);
+    server_socket_ = std::make_shared<ServerSocket>(ip_address, port, port + 10000, socket_name_);
 
     assert(server_socket_->get_client_ids().size() == 0);
 
@@ -96,7 +97,7 @@ void RoutingSocket::connect(std::string ip_address, int port, bool wait, bool sy
 
     ip_address_ = ip_address;
     port_ = port;
-    client_socket_ = std::make_shared<ClientSocket>(ip_address, port, port + 10000, entry_file_);
+    client_socket_ = std::make_shared<ClientSocket>(ip_address, port, port + 10000, socket_name_);
 
     do_sync_ = sync;
     processor_ = std::make_shared<std::thread>([this]() { client_thread(); });
@@ -405,13 +406,13 @@ void RoutingSocket::_get_app_info(nlohmann::json& request, std::vector<uint8_t>&
             client.client_id = item->client_id;
             client.is_validated = item->is_validated;
             client.is_lost = item->is_lost;
-            client.entry_file = (std::string)item->client_metadata["entry_file"];
+            client.socket_name = (std::string)item->client_metadata["socket_name"];
 
             clients.push_back(nlohmann::json({
                 {"client_id", client.client_id},
                 {"is_validated", client.is_validated},
                 {"is_lost", client.is_lost},
-                {"entry_file", client.entry_file},
+                {"socket_name", client.socket_name},
             }));
         }
     }
@@ -430,7 +431,7 @@ void RoutingSocket::_get_app_info(nlohmann::json& request, std::vector<uint8_t>&
         {"metadata", socket_type_ == CONNECT ? client_socket_->get_server_metadata() : server_socket_->get_metadata()},
         {"this_socket", this_socket},
         {"clients", socket_type_ == CONNECT ? 0 : server_socket_->get_client_ids().size()},
-        {"entry_file", entry_file_},
+        {"socket_name", socket_name_},
         {"ip_address", ip_address_},
         {"port", port_},
         {"format", format_type_},
@@ -438,7 +439,7 @@ void RoutingSocket::_get_app_info(nlohmann::json& request, std::vector<uint8_t>&
 }
 
 void RoutingSocket::_get_schema(nlohmann::json& request, std::vector<uint8_t>& response, int active_client_id) {
-    nlohmann::json types;
+    nlohmann::json types = nlohmann::json::array();
     for (auto kvp : known_types_) {
         if (kvp.first == DYNAMIC_OBJECT) {
             continue;
@@ -462,7 +463,7 @@ void RoutingSocket::_get_schema(nlohmann::json& request, std::vector<uint8_t>& r
         });
     }
 
-    nlohmann::json fields;
+    nlohmann::json fields = nlohmann::json::array();
     for (auto kvp : known_types_) {
         if (kvp.first == DYNAMIC_OBJECT) {
             continue;
@@ -491,7 +492,7 @@ void RoutingSocket::_get_schema(nlohmann::json& request, std::vector<uint8_t>& r
         }
     }
 
-    nlohmann::json services;
+    nlohmann::json services = nlohmann::json::array();
     for (auto kvp : known_services_) {
         SchemaInfo::SchemaServiceInfo service;
         service.service_name = kvp.second.service_name;
@@ -509,7 +510,7 @@ void RoutingSocket::_get_schema(nlohmann::json& request, std::vector<uint8_t>& r
         });
     }
 
-    nlohmann::json methods;
+    nlohmann::json methods = nlohmann::json::array();
     for (auto& kvp : known_services_) {
         for (auto& kvp2 : kvp.second.methods) {
             SchemaInfo::SchemaMethodInfo method;
@@ -533,7 +534,7 @@ void RoutingSocket::_get_schema(nlohmann::json& request, std::vector<uint8_t>& r
         }
     }
 
-    nlohmann::json clients;
+    nlohmann::json clients = nlohmann::json::array();
     if (socket_type_ == BIND) {
         server_socket_->update();
         for (auto& item : server_socket_->get_client_full()) {
@@ -542,7 +543,7 @@ void RoutingSocket::_get_schema(nlohmann::json& request, std::vector<uint8_t>& r
             client.client_id = item->client_id;
             client.is_validated = item->is_validated;
             client.is_lost = item->is_lost;
-            client.entry_file = (std::string)item->client_metadata["entry_file"];
+            client.socket_name = (std::string)item->client_metadata["socket_name"];
             client.client_metadata;
 
             clients.push_back(nlohmann::json({
@@ -550,22 +551,22 @@ void RoutingSocket::_get_schema(nlohmann::json& request, std::vector<uint8_t>& r
                 {"client_id", client.client_id},
                 {"is_validated", client.is_validated},
                 {"is_lost", client.is_lost},
-                {"entry_file", client.entry_file},
+                {"socket_name", client.socket_name},
                 {"client_metadata", item->client_metadata},
             }));
         }
     }
 
-    nlohmann::json servers;
+    nlohmann::json servers = nlohmann::json::array();
     if (socket_type_ == CONNECT) {
         SchemaInfo::SchemaServerInfo server;
         server.port = port_;
-        server.entry_file = (std::string)client_socket_->get_server_metadata()["entry_file"];
+        server.socket_name = (std::string)client_socket_->get_server_metadata()["socket_name"];
         server.server_metadata;
 
         servers.push_back(nlohmann::json({
             {"port", server.port},
-            {"entry_file", server.entry_file},
+            {"socket_name", server.socket_name},
             {"server_metadata", client_socket_->get_server_metadata()},
         }));
     }
@@ -589,7 +590,7 @@ void RoutingSocket::_get_schema(nlohmann::json& request, std::vector<uint8_t>& r
     schema.this_socket = this_socket;
     schema.clients;
     schema.servers;
-    schema.entry_file = entry_file_;
+    schema.socket_name = socket_name_;
 
     response = get_buffer_json(nlohmann::json({
         {"server_id", schema.server_id},
@@ -603,7 +604,7 @@ void RoutingSocket::_get_schema(nlohmann::json& request, std::vector<uint8_t>& r
         {"this_socket", schema.this_socket},
         {"clients", clients},
         {"servers", servers},
-        {"entry_file", schema.entry_file},
+        {"socket_name", schema.socket_name},
     }));
 }
 
@@ -804,6 +805,11 @@ void RoutingSocket::_find_missing_methods(nlohmann::json schema) {
             }
         }
     }
+}
+
+int RoutingSocket::get_client_id() {
+    assert(socket_type_ == CONNECT);
+    return client_socket_->get_client_id();
 }
 
 std::vector<int> RoutingSocket::get_client_ids() {

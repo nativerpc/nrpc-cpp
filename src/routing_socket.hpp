@@ -23,6 +23,7 @@
  *          _find_new_fields
  *          _find_new_methods
  *          _find_missing_methods
+ *          get_client_id
  *          get_client_ids
  *          get_socket_type
  *          get_types
@@ -48,7 +49,7 @@ public:
     ~RoutingSocket();
 
     void bind(std::string ip_address, int port);
-    void connect(std::string ip_address, int port, bool wait, bool sync);
+    void connect(std::string ip_address, int port, bool wait=true, bool sync=true);
     
     template<class T>
     std::shared_ptr<T> cast(std::shared_ptr<RoutingSocket> self) {
@@ -92,6 +93,7 @@ public:
     int _find_new_methods(nlohmann::json schema, bool do_add);
     void _find_missing_methods(nlohmann::json schema);
     
+    int get_client_id();
     std::vector<int> get_client_ids();
     SocketType get_socket_type();
     std::map<std::string, ClassInfo> get_types();
@@ -105,7 +107,7 @@ private:
     SocketType socket_type_{SocketType::BIND};
     ProtocolType protocol_type_{ProtocolType::TCP};
     FormatType format_type_{FormatType::JSON};
-    std::string entry_file_;
+    std::string socket_name_;
     std::string ip_address_;
     int port_{0};
     bool is_alive_{false};

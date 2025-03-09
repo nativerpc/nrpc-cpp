@@ -32,12 +32,12 @@
 
 namespace nrpc_cpp {
 
-ClientSocket::ClientSocket(std::string ip_address, int port, int port_rev, std::string entry_file) {
+ClientSocket::ClientSocket(std::string ip_address, int port, int port_rev, std::string socket_name) {
     client_id_ = 0;
     ip_address_ = ip_address;
     port_ = port;
     port_rev_ = port_rev;
-    entry_file_ = entry_file;
+    socket_name_ = socket_name;
     server_signature_ = get_buffer("server:0");
     server_signature_rev_ = get_buffer("rev:server:0");
     client_signature_ = get_buffer("");
@@ -58,7 +58,7 @@ ClientSocket::ClientSocket(std::string ip_address, int port, int port_rev, std::
     metadata.main_port = port;
     metadata.main_port_rev = port_rev;
     metadata.host = std::string(hostname);
-    metadata.entry_file = entry_file_;
+    metadata.socket_name = socket_name_;
     metadata.start_time = get_iso_time(std::chrono::system_clock::now());
     metadata.client_signature = "";
     metadata.client_signature_rev = "";
@@ -70,7 +70,7 @@ ClientSocket::ClientSocket(std::string ip_address, int port, int port_rev, std::
         {"main_port", metadata.main_port},
         {"main_port_rev", metadata.main_port_rev},
         {"host", metadata.host},
-        {"entry_file", metadata.entry_file},
+        {"socket_name", metadata.socket_name},
         {"start_time", metadata.start_time},
         {"client_signature", metadata.client_signature},
         {"client_signature_rev", metadata.client_signature_rev},
